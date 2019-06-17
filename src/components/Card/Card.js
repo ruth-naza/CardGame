@@ -15,10 +15,13 @@ class Card extends Component {
 
     handleClick() {
         if (this.state.isMatched) {
+          console.log('cant click because is matched')
             return;
         }
 
         if (!this.props.cardBoard.canUserClick()) {
+          console.log('cant click because can user click is false');
+          
             return;
         }
 
@@ -69,14 +72,5 @@ class Card extends Component {
         );
     }
 }
-
-// const Card = ({icon}) => {
-//   return (
-//       <div className="icon-center pointer mw4 bg-white br3 pa1 pa4-ns ma2 dib shadow-5 card state-hidden" onClick={foo} 
-//           data-is-visible="false" data-is-solved="false">
-//         <FontAwesomeIcon icon={icon} className="center f1 orange tc hidden" />
-//       </div> 
-//   );
-// }
 
 export default Card;
