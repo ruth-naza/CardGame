@@ -4,21 +4,26 @@ import Card from "../Card/Card";
 import { icons } from "../Card/Icons";
 
 class CardBoard extends Component {
-  state = {
+  DEFAULT_STATE = {
     userCanClick: true,
     pair: [],
     attempts: 0,
-    numMatches: 0
+    numMatches: 0,
+    timerActive: false,
+    runningTime: 0
   };
 
   MAX_MATCHES = 8;
 
   constructor() {
     super();
+    this.state = this.DEFAULT_STATE;
 
     if (Array.isArray(icons)) {
       this.shuffle(icons);
     }
+
+    this.reset = this.reset.bind(this);
   }
 
   shuffle(array) {
@@ -29,11 +34,33 @@ class CardBoard extends Component {
     return this.state.userCanClick;
   }
 
-  getPair() {
-    return this.state.pair;
+  reset() {
+    window.dispatchEvent(new Event('OnCardboardReset'));
+    this.setState(this.DEFAULT_STATE);
+    this.stopTimer();
   }
 
+  startTimer = () => {
+    this.setState(state => {
+      if (state.timerActive) {
+        clearInterval(this.timer);
+      } else {
+        const startTime = Date.now() - this.state.runningTime;
+        this.timer = setInterval(() => {
+          this.setState({ runningTime: Date.now() - startTime });
+        });
+      }
+      return { timerActive: !state.timerActive };
+    });
+  };
+
+  stopTimer = () => {
+    clearInterval(this.timer);
+    this.setState({ runningTime: 0, timerActive: false});
+  };
+
   cardClicked(card) {
+    this.startTimer();
     let pair = this.state.pair;
     if (pair.length < 2) {
       const cardIndex = pair.indexOf(card);
@@ -71,12 +98,17 @@ class CardBoard extends Component {
             card1.setMatched(true);
             card2.setMatched(true);
 
-            this.setState((state)=>{
-              state.numMatches = this.state.numMatches + 1
+            this.setState(state => {
+              state.numMatches = this.state.numMatches + 1;
 
               if (state.numMatches === this.MAX_MATCHES) {
-                console.log("You have won the game");
-                alert(`You have won the game in ${this.state.attempts} attempts! Congratulations!`);
+                this.reset();
+                
+                alert(
+                  `You have won the game in ${
+                    this.state.attempts
+                  } attempts! Congratulations!`
+                );
               }
             });
           } else {
@@ -94,15 +126,29 @@ class CardBoard extends Component {
   }
 
   render() {
-
     return (
       <section className=" br3 color-grad mw5 mw7-ns center mt5 shadow-5 pa3 ph5-ns">
-        <h1 className="mt0 white f1">Card Game</h1>
-      <p className="lh-copy center measure white">Click on a card to start {this.state.attempts}</p>
+        <h1 className="f1 white ttu tracked">Card Game</h1>
+        <div className="cf dib center item-center">
+          <dl className="fl fn-l w-50 dib-l w-auto-l lh-title mr5-l white">
+            <dd className="f6 fw4 ml0">No of Attempts</dd>
+            <dd className="f3 fw6 ml0">{this.state.attempts}</dd>
+          </dl>
+          <dl className="fl fn-l w-50 dib-l w-auto-l lh-title mr5-l white">
+            <dd className="f6 fw4 ml0">Timer</dd>
+            <dd className="f3 fw6 ml0">{this.state.runningTime}</dd>
+          </dl>
+          <dl className="fl fn-l white w-50 dib-l w-auto-l lh-title mr5-l">
+            <dd className="f6 fw4 ml0">New Game</dd>
+            <button className="f4 fw6 ml0 grow pointer br-pill white bg-dark-gray"onClick={this.reset}>Reset</button>
+          </dl>
+        </div>
         <div className="cardList">
-          {icons.map((icon, index)=> {
-            return <Card key={index} icon={icon.icon} cardBoard={this} />;
-          })}
+          {
+            icons.map((icon, index) => {
+              return <Card key={index} icon={icon.icon} cardBoard={this} />
+            })
+          }
         </div>
       </section>
     );
