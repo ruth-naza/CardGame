@@ -22,7 +22,7 @@ class Card extends Component {
 
   componentWillUnmount() {
     // Unregister the 'OnCardboardReset' event listener
-    window.removeEventListener('OnCardboardReset');
+    window.removeEventListener('OnCardboardReset', this.reset);
   }
 
   handleClick() {

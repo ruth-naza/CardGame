@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./CardBoard.css";
 import Card from "../Card/Card";
 import { icons } from "../Card/Icons";
+import Modal from 'react-responsive-modal';
 
 class CardBoard extends Component {
   DEFAULT_STATE = {
@@ -9,8 +10,7 @@ class CardBoard extends Component {
     pair: [],
     attempts: 0,
     numMatches: 0,
-    timerActive: false,
-    runningTime: 0
+    open: false
   };
 
   MAX_MATCHES = 8;
@@ -37,30 +37,17 @@ class CardBoard extends Component {
   reset() {
     window.dispatchEvent(new Event('OnCardboardReset'));
     this.setState(this.DEFAULT_STATE);
-    this.stopTimer();
   }
 
-  startTimer = () => {
-    this.setState(state => {
-      if (state.timerActive) {
-        clearInterval(this.timer);
-      } else {
-        const startTime = Date.now() - this.state.runningTime;
-        this.timer = setInterval(() => {
-          this.setState({ runningTime: Date.now() - startTime });
-        });
-      }
-      return { timerActive: !state.timerActive };
-    });
+  onOpenModal() {
+    this.setState({ open: true });
   };
 
-  stopTimer = () => {
-    clearInterval(this.timer);
-    this.setState({ runningTime: 0, timerActive: false});
+  onCloseModal = () => {
+    this.setState({ open: false });
   };
 
   cardClicked(card) {
-    this.startTimer();
     let pair = this.state.pair;
     if (pair.length < 2) {
       const cardIndex = pair.indexOf(card);
@@ -102,13 +89,7 @@ class CardBoard extends Component {
               state.numMatches = this.state.numMatches + 1;
 
               if (state.numMatches === this.MAX_MATCHES) {
-                this.reset();
-                
-                alert(
-                  `You have won the game in ${
-                    this.state.attempts
-                  } attempts! Congratulations!`
-                );
+                this.onOpenModal();
               }
             });
           } else {
@@ -126,6 +107,7 @@ class CardBoard extends Component {
   }
 
   render() {
+    const { open } = this.state;
     return (
       <section className=" br3 color-grad mw5 mw7-ns center mt5 shadow-5 pa3 ph5-ns">
         <h1 className="f1 white ttu tracked">Card Game</h1>
@@ -133,10 +115,6 @@ class CardBoard extends Component {
           <dl className="fl fn-l w-50 dib-l w-auto-l lh-title mr5-l white">
             <dd className="f6 fw4 ml0">No of Attempts</dd>
             <dd className="f3 fw6 ml0">{this.state.attempts}</dd>
-          </dl>
-          <dl className="fl fn-l w-50 dib-l w-auto-l lh-title mr5-l white">
-            <dd className="f6 fw4 ml0">Timer</dd>
-            <dd className="f3 fw6 ml0">{this.state.runningTime}</dd>
           </dl>
           <dl className="fl fn-l white w-50 dib-l w-auto-l lh-title mr5-l">
             <dd className="f6 fw4 ml0">New Game</dd>
@@ -149,6 +127,9 @@ class CardBoard extends Component {
               return <Card key={index} icon={icon.icon} cardBoard={this} />
             })
           }
+          <Modal open={ open } onClose={this.onCloseModal} center>
+            <h2>You have won the game in {this.state.attempts} attempts! Congratulations!</h2>
+          </Modal>
         </div>
       </section>
     );
