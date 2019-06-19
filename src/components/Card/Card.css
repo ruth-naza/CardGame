@@ -3,9 +3,8 @@
   width: 120px;
   height: 120px;
 }
-
 .card {
-
+  display: inline-block;
 }
 
 .card.state-hidden {

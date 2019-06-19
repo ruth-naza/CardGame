@@ -73,7 +73,7 @@ class Card extends Component {
 
     return (
       <div
-        className={`icon-center pointer mw4 bg-white br3 pa1 pa4-ns ma2 dib shadow-5 card ${
+        className={`icon-center pointer mw4 br3 pa1 pa4-ns ma2 bg-white shadow-5 card ${
           this.state.cardUp ? "" : "state-hidden"
         }`}
         {...cardOptions}
