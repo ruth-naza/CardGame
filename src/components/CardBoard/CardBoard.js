@@ -4,26 +4,27 @@ import Card from "../Card/Card";
 import { icons } from "../Card/Icons";
 import Modal from 'react-responsive-modal';
 
-class CardBoard extends Component {
-  DEFAULT_STATE = {
-    userCanClick: true,
-    pair: [],
-    attempts: 0,
-    numMatches: 0,
-    open: false
-  };
 
+class CardBoard extends Component {
   MAX_MATCHES = 8;
 
   constructor() {
     super();
-    this.state = this.DEFAULT_STATE;
 
+    this.state = {
+      userCanClick: true,
+      pair: [],
+      attempts: 0,
+      numMatches: 0,
+      open: false
+    };
+    
     if (Array.isArray(icons)) {
       this.shuffle(icons);
     }
 
     this.reset = this.reset.bind(this);
+    this.onCloseModal = this.onCloseModal.bind(this);
   }
 
   shuffle(array) {
@@ -35,20 +36,30 @@ class CardBoard extends Component {
   }
 
   reset() {
+    this.setState({
+      userCanClick: true,
+      pair: [],
+      attempts: 0,
+      numMatches: 0,
+      open: false
+    });
+
+    this.shuffle(icons)
+
     window.dispatchEvent(new Event('OnCardboardReset'));
-    this.setState(this.DEFAULT_STATE);
   }
 
   onOpenModal() {
     this.setState({ open: true });
   };
 
-  onCloseModal = () => {
+  onCloseModal() {
     this.setState({ open: false });
   };
 
   cardClicked(card) {
-    let pair = this.state.pair;
+    //let pair = this.state.pair;
+    let {pair} = this.state;
     if (pair.length < 2) {
       const cardIndex = pair.indexOf(card);
       if (cardIndex < 0) {
@@ -101,6 +112,7 @@ class CardBoard extends Component {
             pair: [],
             userCanClick: true
           });
+
         }, 1000);
       }
     }
@@ -109,7 +121,7 @@ class CardBoard extends Component {
   render() {
     const { open } = this.state;
     return (
-      <section className=" br3 color-grad mw5 mw7-ns center mt5 shadow-5 pa3 ph5-ns">
+      <section className="br3 color-grad mw5 mw7-ns center mt5 shadow-5 pa3 ph5-ns">
         <h1 className="f1 white ttu tracked">Card Game</h1>
         <div className="cf dib center item-center">
           <dl className="fl fn-l w-50 dib-l w-auto-l lh-title mr5-l white">
@@ -118,7 +130,7 @@ class CardBoard extends Component {
           </dl>
           <dl className="fl fn-l white w-50 dib-l w-auto-l lh-title mr5-l">
             <dd className="f6 fw4 ml0">New Game</dd>
-            <button className="f4 fw6 ml0 grow pointer br-pill white bg-dark-gray"onClick={this.reset}>Reset</button>
+            <button className="f4 fw6 ml0 grow pointer br-pill white bg-dark-gray" onClick={this.reset}>Reset</button>
           </dl>
         </div>
         <div className="cardList">

@@ -27,12 +27,10 @@ class Card extends Component {
 
   handleClick() {
     if (this.state.isMatched) {
-    
       return;
     }
 
     if (!this.props.cardBoard.canUserClick()) {
-
       return;
     }
 
@@ -73,7 +71,7 @@ class Card extends Component {
 
     return (
       <div
-        className={`icon-center pointer mw4 br3 pa1 pa4-ns ma2 bg-white shadow-5 card ${
+        className={`cf icon-center pointer mw4 br3 pa1 pa4-ns ma2 bg-white shadow-5 card ${
           this.state.cardUp ? "" : "state-hidden"
         }`}
         {...cardOptions}

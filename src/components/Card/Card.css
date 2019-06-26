@@ -1,5 +1,5 @@
 .icon-center {
-  display: flex;
+  display: block;
   width: 120px;
   height: 120px;
 }
